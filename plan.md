@@ -1,1 +1,10 @@
-#plan obuchen
+# Устанавливаем Python и pip (если вдруг нет)
+sudo apt update
+sudo apt install python3 python3-pip -y
+
+# Устанавливаем uv (быстрый менеджер пакетов для Python)
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# Чтобы команда uv заработала, нужно обновить переменные окружения
+source $HOME/.local/bin/env
+
