@@ -1,5 +1,5 @@
 ---
-- name: Установка Docker и запуск Nginx на сервере брата
+- name: Установка Docker и запуск кастомного сайта на сервере брата
   hosts: brother
   become: yes
 
@@ -19,10 +19,25 @@
         state: started
         enabled: yes
 
-    - name: Запустить контейнер Nginx
+    - name: Скопировать файлы проекта на сервер брата
+      copy:
+        src: "{{ item }}"
+        dest: /root/
+      loop:
+        - Dockerfile
+        - index.html
+
+    - name: Собрать кастомный образ из Dockerfile
+      docker_image:
+        name: my-custom-site
+        source: build
+        build:
+          path: /root/
+
+    - name: Запустить кастомный контейнер
       docker_container:
-        name: ansible-nginx
-        image: nginx
+        name: my-ansible-site
+        image: my-custom-site
         state: started
         ports:
-          - "8085:80"
+          - "8086:80"

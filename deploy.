@@ -1,0 +1,35 @@
+---
+- name: Установка Docker и запуск Nginx на сервере брата
+  hosts: brother
+  become: yes
+
+  tasks:
+    - name: Обновить кэш пакетов
+      apt:
+        update_cache: yes
+
+    - name: Установить Docker
+      apt:
+        name: docker.io
+        state: present
+
+    - name: Запустить Docker и добавить в автозагрузку
+      service:
+        name: docker
+        state: started
+        enabled: yes
+
+    - name: Собрать кастомный образ из Dockerfile
+      docker_image:
+        name: my-custom-site
+        source: build
+        build:
+          path: .
+
+    - name: Запустить кастомный контейнер
+      docker_container:
+        name: my-ansible-site
+        image: my-custom-site
+        state: started
+        ports:
+          - "8086:80"
